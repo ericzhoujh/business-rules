@@ -18,7 +18,7 @@ def run(rule, defined_variables, defined_actions):
     conditions, actions = rule['conditions'], rule['actions']
     rule_triggered = check_conditions_recursively(conditions, defined_variables)
     if rule_triggered:
-        do_actions(actions, defined_actions, rule=rule)
+        do_actions(actions, defined_actions, triggered_rule=rule)
         return True
     return False
 
