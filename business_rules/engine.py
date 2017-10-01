@@ -18,7 +18,7 @@ def run(rule, defined_variables, defined_actions):
     conditions, actions = rule['conditions'], rule['actions']
     rule_triggered = check_conditions_recursively(conditions, defined_variables)
     if rule_triggered:
-        do_actions(actions, defined_actions)
+        do_actions(actions, defined_actions, rule=rule)
         return True
     return False
 
@@ -85,12 +85,13 @@ def _do_operator_comparison(operator_type, operator_name, comparison_value):
     return method(comparison_value)
 
 
-def do_actions(actions, defined_actions):
+def do_actions(actions, defined_actions, *args, **kwargs):
     for action in actions:
         method_name = action['name']
         def fallback(*args, **kwargs):
             raise AssertionError("Action {0} is not defined in class {1}"\
                     .format(method_name, defined_actions.__class__.__name__))
         params = action.get('params') or {}
+        params.update(kwargs)
         method = getattr(defined_actions, method_name, fallback)
         method(**params)
