@@ -67,33 +67,41 @@ class StringType(BaseType):
                                  format(value))
         return value
 
-    @type_operator(FIELD_TEXT)
+    @type_operator(FIELD_TEXT, label="相同")
     def equal_to(self, other_string):
         return self.value == other_string
 
-    @type_operator(FIELD_TEXT, label="Equal To (case insensitive)")
+    @type_operator(FIELD_TEXT, label="相同（不区分大小写）")
     def equal_to_case_insensitive(self, other_string):
         return self.value.lower() == other_string.lower()
 
-    @type_operator(FIELD_TEXT)
+    @type_operator(FIELD_TEXT, label='以此开头')
     def starts_with(self, other_string):
         return self.value.startswith(other_string)
 
-    @type_operator(FIELD_TEXT)
+    @type_operator(FIELD_TEXT, label='以此结尾')
     def ends_with(self, other_string):
         return self.value.endswith(other_string)
 
-    @type_operator(FIELD_TEXT)
+    @type_operator(FIELD_TEXT, label='包含')
     def contains(self, other_string):
         return other_string in self.value
 
-    @type_operator(FIELD_TEXT)
+    @type_operator(FIELD_TEXT, label='匹配正则')
     def matches_regex(self, regex):
         return re.search(regex, self.value)
 
-    @type_operator(FIELD_NO_INPUT)
+    @type_operator(FIELD_NO_INPUT, label='非空')
     def non_empty(self):
         return bool(self.value)
+
+    @type_operator(FIELD_TEXT, label='大于或等于')
+    def string_great_than_or_equal_to(self, other_string):
+        return self.value >= other_string
+
+    @type_operator(FIELD_TEXT, label='小于或等于')
+    def string_less_than_or_equal_to(self, other_string):
+        return self.value <= other_string
 
 
 @export_type
@@ -115,23 +123,23 @@ class NumericType(BaseType):
             raise AssertionError("{0} is not a valid numeric type.".
                                  format(value))
 
-    @type_operator(FIELD_NUMERIC)
+    @type_operator(FIELD_NUMERIC, label="等于")
     def equal_to(self, other_numeric):
         return abs(self.value - other_numeric) <= self.EPSILON
 
-    @type_operator(FIELD_NUMERIC)
+    @type_operator(FIELD_NUMERIC, label="大于")
     def greater_than(self, other_numeric):
         return (self.value - other_numeric) > self.EPSILON
 
-    @type_operator(FIELD_NUMERIC)
+    @type_operator(FIELD_NUMERIC, label="大于或等于")
     def greater_than_or_equal_to(self, other_numeric):
         return self.greater_than(other_numeric) or self.equal_to(other_numeric)
 
-    @type_operator(FIELD_NUMERIC)
+    @type_operator(FIELD_NUMERIC, label="小于")
     def less_than(self, other_numeric):
         return (other_numeric - self.value) > self.EPSILON
 
-    @type_operator(FIELD_NUMERIC)
+    @type_operator(FIELD_NUMERIC, label="小于或等于")
     def less_than_or_equal_to(self, other_numeric):
         return self.less_than(other_numeric) or self.equal_to(other_numeric)
 
@@ -147,11 +155,11 @@ class BooleanType(BaseType):
                                  format(value))
         return value
 
-    @type_operator(FIELD_NO_INPUT)
+    @type_operator(FIELD_NO_INPUT, label="为真值")
     def is_true(self):
         return self.value
 
-    @type_operator(FIELD_NO_INPUT)
+    @type_operator(FIELD_NO_INPUT, label="为假值")
     def is_false(self):
         return not self.value
 
